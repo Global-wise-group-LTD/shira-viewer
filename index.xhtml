@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="he" dir="rtl"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="robots" content="noindex"/>
+<title>שירה · שיחות</title><style><![CDATA[
+*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Helvetica,Arial,sans-serif;background:#d1d7db;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+#app{display:flex;flex:1;min-height:0;width:100%;max-width:1600px;margin:auto;background:#fff}
+#side{width:30%;min-width:300px;border-left:1px solid #e9edef;display:flex;flex-direction:column}
+.hdr{background:#f0f2f5;height:60px;display:flex;align-items:center;padding:0 16px;gap:10px;font-weight:600;color:#111b21}
+#search{margin:8px 12px;padding:8px 14px;border:0;border-radius:8px;background:#f0f2f5;font-size:14px}
+#list{overflow-y:auto;flex:1}
+.c{display:flex;gap:12px;padding:10px 14px;cursor:pointer;border-bottom:1px solid #f0f2f5;align-items:center}.c:hover{background:#f5f6f6}.c.act{background:#f0f2f5}
+.av{width:46px;height:46px;border-radius:50%;background:#dfe5e7;display:flex;align-items:center;justify-content:center;font-weight:700;color:#54656f;flex:none}
+.ci{flex:1;min-width:0}.r1,.r2{display:flex;justify-content:space-between;gap:6px}.nm{font-size:16px;color:#111b21;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tm{font-size:12px;color:#667781;flex:none}.pv{font-size:13px;color:#667781;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ph{font-size:12px;color:#8696a0;direction:ltr;text-align:right}
+.bd{font-size:11px;padding:1px 7px;border-radius:9px;background:#e7f3ff;color:#1a5fb4;margin-inline-start:4px}
+.un{background:#25d366;color:#fff;border-radius:10px;font-size:11px;padding:1px 7px;flex:none}
+#main{flex:1;display:flex;flex-direction:column;background:#efeae2}
+#chat{flex:1;overflow-y:auto;padding:16px 6%;background:#efeae2 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='5' cy='5' r='1' fill='%23d9d2c5'/%3E%3C/svg%3E")}
+.b{max-width:65%;padding:6px 9px 8px;border-radius:8px;margin:2px 0;box-shadow:0 1px .5px rgba(0,0,0,.13);font-size:14.2px;line-height:1.4;white-space:pre-wrap;word-wrap:break-word;position:relative;color:#111b21}
+.in{background:#fff;margin-left:auto;border-top-right-radius:0}.out{background:#d9fdd3;margin-right:auto;border-top-left-radius:0}
+.row{display:flex}.meta{font-size:11px;color:#667781;text-align:left;margin-top:2px;direction:ltr}
+.tk{color:#8696a0}.tk.read{color:#53bdeb}.tk.failed{color:#e53935}
+.ds{text-align:center;margin:12px 0}.ds span{background:#fff;padding:5px 12px;border-radius:8px;font-size:12.5px;color:#54656f;box-shadow:0 1px .5px rgba(0,0,0,.13)}
+.b img{max-width:100%;max-height:330px;border-radius:6px;display:block;margin-bottom:4px;cursor:pointer}
+.it{color:#667781;font-style:italic}
+#info{background:#fff;font-size:13px;color:#3b4a54;padding:6px 16px;border-bottom:1px solid #e9edef;display:none}
+#back{display:none;background:none;border:0;font-size:22px;cursor:pointer;color:#54656f}
+#empty{flex:1;display:flex;align-items:center;justify-content:center;color:#667781;font-size:15px;background:#f0f2f5;flex-direction:column;gap:8px}
+@media(max-width:760px){#side{width:100%;min-width:0}#main{display:none;width:100%}body.open #side{display:none}body.open #main{display:flex}#back{display:block}.b{max-width:85%}#chat{padding:12px 10px}}
+#cmp{display:none;background:#f0f2f5;padding:8px 12px;gap:8px;align-items:flex-end}#cmp textarea{flex:1;resize:none;border:0;border-radius:8px;padding:9px 12px;font:15px Segoe UI,Helvetica,Arial,sans-serif;max-height:140px;min-height:40px;outline:none;direction:rtl}
+#sendb{width:42px;height:42px;border-radius:50%;border:0;background:#00a884;color:#fff;font-size:18px;cursor:pointer;flex:none}#sendb:disabled{background:#8696a0;cursor:default}
+#cerr{display:none;background:#fde8e8;color:#b3261e;font-size:13px;padding:6px 14px}.mn{font-size:11px;color:#00796b;margin-bottom:2px}
+#tabs{display:flex;background:#00a884}#tabs a{flex:1;text-align:center;padding:10px 0;color:#e6fff8;text-decoration:none;font-weight:600;font-size:15px}#tabs a.on{background:#fff;color:#008069}
+]]></style></head><body><div id="tabs"><a id="tabA" href="#">אנטולי</a><a class="on" href="#">שירה</a></div><div id="app">
+<div id="side"><div class="hdr">💬 שירה · כל השיחות</div><input id="search" placeholder="חיפוש לפי שם או מספר"/><div id="list"></div></div>
+<div id="main"><div id="empty"><div style="font-size:40px">💬</div>בחר שיחה מהרשימה<div style="font-size:12px">מתעדכן אוטומטית כל 15 שניות</div></div>
+<div class="hdr" id="th" style="display:none"><button id="back">→</button><div class="av" id="tav"></div><div><div id="tn"></div><div class="ph" id="tp"></div></div></div>
+<div id="info"></div><div id="chat" style="display:none"></div><div id="cerr"></div></div></div>
+<script>//<![CDATA[
+
+let K=new URLSearchParams(location.search).get('k')||localStorage.getItem('shira_k');if(!K){K=prompt('מפתח עמוד השיחות של שירה:');}if(K)localStorage.setItem('shira_k',K);const API='https://gcmhtbbmjhkvqdvguhkh.supabase.co/functions/v1/shira-viewer';const A=(q)=>fetch(API+'?k='+encodeURIComponent(K)+'&'+q).then(r=>r.json());
+{const ak=new URLSearchParams(location.search).get('ak');const t=document.getElementById('tabA');if(ak){t.href='https://gcmhtbbmjhkvqdvguhkh.supabase.co/functions/v1/chat-viewer?k='+encodeURIComponent(ak)}else{t.title='חסר פרמטר ak בקישור';t.style.opacity='.5'}}
+const TZ='Asia/Jerusalem';let contacts=[],cur=null,lastSig='';
+const esc=s=>(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmtPhone=p=>p.startsWith('972')?'0'+p.slice(3).replace(/^(\d{2})(\d{3})(\d+)/,'$1-$2-$3'):p;
+const dkey=d=>new Date(d).toLocaleDateString('en-CA',{timeZone:TZ});
+const hm=d=>new Date(d).toLocaleTimeString('he-IL',{timeZone:TZ,hour:'2-digit',minute:'2-digit'});
+function when(d){if(!d)return'';const k=dkey(d),t=dkey(new Date()),y=dkey(Date.now()-864e5);return k===t?hm(d):k===y?'אתמול':new Date(d).toLocaleDateString('he-IL',{timeZone:TZ,day:'numeric',month:'numeric'})}
+function dlabel(d){const k=dkey(d);if(k===dkey(new Date()))return'היום';if(k===dkey(Date.now()-864e5))return'אתמול';return new Date(d).toLocaleDateString('he-IL',{timeZone:TZ,weekday:'long',day:'numeric',month:'long',year:'numeric'})}
+const LEC={Tal:'טל',Nadav:'נדב',Matan:'מתן',Elad:'אלעד',Yarin:'ירין'};const lec=l=>l?(LEC[l]||l):'';
+const TYPES={image:'📷 תמונה',audio:'🎤 הודעה קולית',voice:'🎤 הודעה קולית',video:'🎥 וידאו',document:'📄 מסמך',sticker:'סטיקר',reaction:'תגובה'};
+function renderList(){const q=document.getElementById('search').value.trim().toLowerCase();
+document.getElementById('list').innerHTML=contacts.filter(c=>!q||(c.name||'').toLowerCase().includes(q)||c.phone.includes(q.replace(/^0/,''))||fmtPhone(c.phone).includes(q)).map(c=>{
+const nm=c.name||fmtPhone(c.phone);const pv=(c.lastDir==='out'?'✓ ':'')+(c.last&&!/^\[/.test(c.last)?c.last:(TYPES[c.lastType]||c.last||''));
+return `<div class="c ${cur===c.phone?'act':''}" data-p="${c.phone}"><div class="av">${esc([...nm][0])}</div><div class="ci"><div class="r1"><span class="nm">${esc(nm)}${c.lecturer?`<span class="bd">${esc(lec(c.lecturer))}</span>`:''}</span><span class="tm">${when(c.lastAt)}</span></div><div class="ph">${fmtPhone(c.phone)}</div><div class="r2"><span class="pv">${esc(pv)}</span>${c.pending?`<span class="un">${c.pending}</span>`:''}</div></div></div>`}).join('')||'<div style="padding:20px;color:#667781">אין תוצאות</div>';
+document.querySelectorAll('.c').forEach(e=>e.onclick=()=>openT(e.dataset.p));}
+async function loadContacts(){try{contacts=await A('api=contacts');renderList()}catch(e){}}
+function tick(s){if(!s)return'<span class="tk">🕓</span>';if(s==='failed')return'<span class="tk failed">⚠ נכשל</span>';return`<span class="tk ${s}">${s==='sent'?'✓':'✓✓'}</span>`}
+function imgErr(e){const d=document.createElement('div');d.className='it';d.textContent='[תמונה]';e.replaceWith(d)}
+function body(m){let h='';const media=m.media_id?API+`?k=${encodeURIComponent(K)}&api=media&id=${m.media_id}`:m.out_ref?API+`?k=${encodeURIComponent(K)}&api=out-media&ref=${encodeURIComponent(m.out_ref)}`:m.media;
+if(m.type==='image'||m.type==='sticker'){h+=media?`<img loading="lazy" src="${esc(media)}" onclick="window.open(this.src)" onerror="imgErr(this)"/>`:'<div class="it">[תמונה]</div>'}
+else if(m.type==='audio'||m.type==='voice'){if(!m.text)h+='<div class="it">[הודעה קולית]</div>';else h+='<div class="it">🎤 תמלול:</div>'}
+else if(m.type&&!['text','button','interactive','reaction'].includes(m.type)&&!m.text)h+=`<div class="it">[${TYPES[m.type]||m.type}]</div>`;
+if(m.type==='reaction')h+='תגובה: ';if(m.text)h+=esc(m.text);return h}
+async function openT(p,keep){if(!keep){if(cur!==p){showErr('')}cur=p;lastSig='';document.body.classList.add('open');renderList()}
+const d=await A('api=thread&phone='+p);if(cur!==p)return;const sig=JSON.stringify(d.msgs.map(m=>[m.at,m.status]))+JSON.stringify(d.score)+d.feedback.length;if(sig===lastSig)return;lastSig=sig;
+const c=contacts.find(x=>x.phone===p)||{};const nm=c.name||d.conv?.name||fmtPhone(p);
+document.getElementById('empty').style.display='none';['th','chat'].forEach(i=>document.getElementById(i).style.display='flex');document.getElementById('chat').style.display='block';
+document.getElementById('tav').textContent=[...nm][0];document.getElementById('tn').innerHTML=esc(nm)+(d.conv?.lecturer?`<span class="bd">${esc(lec(d.conv.lecturer))}</span>`:'');document.getElementById('tp').textContent=fmtPhone(p);
+const inf=[];if(d.conv?.mode&&d.conv.mode!=='anatoly')inf.push('מצב: '+esc(d.conv.mode==='ido'?'עידו (מכירות)':d.conv.mode));
+if(d.score)inf.push(`<b>ציון הבנה: ${d.score.score}/10</b>${d.score.suggest_reinforcement?' · <span style="color:#c0392b">כדאי להציע חיזוק</span>':''}`+(d.score.weaknesses?` · לחדד: ${esc(d.score.weaknesses)}`:''));
+for(const f of d.feedback)inf.push(`משוב: ${f.satisfied===true?'👍 מרוצה':f.satisfied===false?'👎 לא מרוצה':''} ${esc(f.what_missing||'')} ${f.comment?'"'+esc(f.comment)+'"':''}`);
+const ie=document.getElementById('info');ie.innerHTML=inf.join('<br/>');ie.style.display=inf.length?'block':'none';
+const ch=document.getElementById('chat');const atBottom=ch.scrollHeight-ch.scrollTop-ch.clientHeight<80;let h='',ld='';
+for(const m of d.msgs){const k=dkey(m.at);if(k!==ld){h+=`<div class="ds"><span>${dlabel(m.at)}</span></div>`;ld=k}
+h+=`<div class="row"><div class="b ${m.dir}">${m.manual?'<div class="mn">✍️ נשלח ידנית</div>':''}${body(m)}<div class="meta">${m.dir==='out'?tick(m.status)+' ':''}${hm(m.at)}${m.pending?' · ממתין לתשובה':''}</div></div></div>`}
+ch.innerHTML=h||'<div class="ds"><span>אין הודעות</span></div>';if(!keep||atBottom)ch.scrollTop=ch.scrollHeight}
+function showErr(){}
+document.getElementById('search').oninput=renderList;document.getElementById('back').onclick=()=>{document.body.classList.remove('open');cur=null;renderList()};
+loadContacts().then(()=>{const o=new URLSearchParams(location.search).get('c');if(o)openT(o)});setInterval(()=>{loadContacts();if(cur)openT(cur,true)},15000);
+
+//]]></script></body></html>
