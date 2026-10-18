@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="he" dir="rtl"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="robots" content="noindex"/>
 <title>שירה · שיחות</title><style><![CDATA[
-*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Helvetica,Arial,sans-serif;background:#d1d7db;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Helvetica,Arial,sans-serif;background:#d1d7db;height:100vh;height:100dvh;overflow:hidden;display:flex;flex-direction:column}
 #app{display:flex;flex:1;min-height:0;width:100%;max-width:1600px;margin:auto;background:#fff}
 #side{width:30%;min-width:300px;border-left:1px solid #e9edef;display:flex;flex-direction:column}
 .hdr{background:#f0f2f5;height:60px;display:flex;align-items:center;padding:0 16px;gap:10px;font-weight:600;color:#111b21}
@@ -31,7 +31,7 @@
 @media(max-width:760px){#side{width:100%;min-width:0}#main{display:none;width:100%}body.open #side{display:none}body.open #main{display:flex}#back{display:block}.b{max-width:85%}#chat{padding:12px 10px}}
 #cmp{display:none;background:#f0f2f5;padding:8px 12px;gap:8px;align-items:flex-end}#cmp textarea{flex:1;resize:none;border:0;border-radius:8px;padding:9px 12px;font:15px Segoe UI,Helvetica,Arial,sans-serif;max-height:140px;min-height:40px;outline:none;direction:rtl}
 #sendb{width:42px;height:42px;border-radius:50%;border:0;background:#00a884;color:#fff;font-size:18px;cursor:pointer;flex:none}#sendb:disabled{background:#8696a0;cursor:default}
-#cerr{display:none;background:#fde8e8;color:#b3261e;font-size:13px;padding:6px 14px}.mn{font-size:11px;color:#00796b;margin-bottom:2px}
+#cerr{display:none;background:#fde8e8;color:#b3261e;font-size:13px;padding:6px 14px}.mn{font-size:11px;color:#00796b;margin-bottom:2px}#cnote{display:none;font-size:12.5px;line-height:1.45;padding:6px 14px;background:#f7f8fa;color:#54656f;border-top:1px solid #e9edef}#cnote.warn{background:#fff4e5;color:#7a4100}#cov{display:none;background:#fdecea;color:#8a1c12;font-size:13.5px;padding:10px 14px;border-top:1px solid #f5c2c0}#cov ul{margin:4px 0 8px;padding-inline-start:18px}#cov .btn{margin-inline-end:8px;margin-top:4px}.btn.red{background:#c62828}.btn.gray{background:#8696a0}#ccnt{font-size:11px;color:#8696a0;align-self:center;flex:none;min-width:52px;text-align:center;direction:ltr}#sendb{width:auto;padding:0 16px;border-radius:21px;font-size:15px;font-weight:600}.tl{font-size:11px;color:#667781;margin-bottom:3px}@media(max-width:760px){#cmp{padding:6px 8px;gap:6px}#cmp textarea{font-size:16px}#ccnt{display:none}}
 #tabs{display:flex;background:#00a884}#tabs a{flex:1;text-align:center;padding:10px 0;color:#e6fff8;text-decoration:none;font-weight:600;font-size:15px}#tabs a.on{background:#fff;color:#008069}
 #cases{display:none;flex:1;min-height:0;overflow:auto;background:#fff;width:100%;max-width:1600px;margin:auto;padding:12px 16px}
 body.cs #app{display:none}body.cs #cases{display:block}
@@ -46,7 +46,7 @@ body.st #app{display:none}body.st #staff{display:block}#staff table{border-colla
 <div id="side"><div class="hdr">💬 שירה · כל השיחות</div><input id="search" placeholder="חיפוש לפי שם או מספר"/><div id="list"></div></div>
 <div id="main"><div id="empty"><div style="font-size:40px">💬</div>בחר שיחה מהרשימה<div style="font-size:12px">מתעדכן אוטומטית כל 15 שניות</div></div>
 <div class="hdr" id="th" style="display:none"><button id="back">→</button><div class="av" id="tav"></div><div><div id="tn"></div><div class="ph" id="tp"></div></div></div>
-<div id="info"></div><div id="chat" style="display:none"></div><div id="cerr"></div></div></div>
+<div id="info"></div><div id="chat" style="display:none"></div><div id="cov"></div><div id="cerr"></div><div id="cnote"></div><div id="cmp"><textarea id="ctext" rows="2" maxlength="4096" placeholder="כתיבת הודעה לתלמיד בשמך (נשלחת מהמספר של שירה)"></textarea><span id="ccnt"></span><button id="sendb" disabled="disabled">שליחה</button></div></div></div>
 <div id="cases"><div class="ctop"><b style="font-size:17px">📋 כל המקרים ששירה טיפלה בהם</b><span class="sm" id="ccount"></span><input id="csearch" placeholder="חיפוש לפי שם, טלפון או סיבה"/><select id="ctype"><option value="">כל סוגי המקרים</option></select><button class="btn" id="ccsv">⬇ הורדה ל-CSV</button></div>
 <table><thead><tr><th>תאריך ושעה</th><th>שם מלא</th><th>טלפון</th><th>סוג מקרה</th><th>סיבה</th><th>מה בוצע</th><th>קורס הקלטות</th><th>טלגרם</th><th>נשלחה הודעה</th><th>הערות</th></tr></thead><tbody id="cbody"></tbody></table></div>
 <div id="staff"><div class="ctop"><b style="font-size:17px">🧑‍💼 מי שצריך טיפול של הצוות</b><span class="sm" id="tcount"></span><input id="tsearch" placeholder="חיפוש לפי שם, טלפון או משימה"/><select id="tstat"><option value="פתוח">פתוחים</option><option value="">הכול</option><option value="טופל">טופלו</option></select><button class="btn" id="tcsv">⬇ הורדה לאקסל (CSV)</button></div>
@@ -79,7 +79,7 @@ if(au)h+=`<audio class="au" controls="controls" preload="none" src="${esc(au)}">
 if(tr)h+='<div class="it">🎤 תמלול:</div>';if(!m.text&&m.transcript)h+=esc(m.transcript)}
 else if(m.type&&!['text','button','interactive','reaction'].includes(m.type)&&!m.text)h+=`<div class="it">[${TYPES[m.type]||m.type}]</div>`;
 if(m.type==='reaction')h+='תגובה: ';if(m.text)h+=esc(m.text);return h}
-async function openT(p,keep){if(!keep){if(cur!==p){showErr('')}cur=p;lastSig='';document.body.classList.add('open');renderList()}
+async function openT(p,keep){if(!keep){if(cur!==p){showErr('');hideOv();comp=null;pendingCid=null;document.getElementById('ctext').value='';renderCompose()}cur=p;lastSig='';document.body.classList.add('open');renderList();loadCompose(p)}
 const d=await A('api=thread&phone='+p);if(cur!==p)return;const sig=JSON.stringify(d.msgs.map(m=>[m.at,m.status]))+JSON.stringify(d.score)+d.feedback.length;if(sig===lastSig)return;lastSig=sig;
 const c=contacts.find(x=>x.phone===p)||{};const nm=c.name||d.conv?.name||fmtPhone(p);
 document.getElementById('empty').style.display='none';['th','chat'].forEach(i=>document.getElementById(i).style.display='flex');document.getElementById('chat').style.display='block';
@@ -90,11 +90,46 @@ for(const f of d.feedback)inf.push(`משוב: ${f.satisfied===true?'👍 מרו�
 const ie=document.getElementById('info');ie.innerHTML=inf.join('<br/>');ie.style.display=inf.length?'block':'none';
 const ch=document.getElementById('chat');const atBottom=ch.scrollHeight-ch.scrollTop-ch.clientHeight<80;let h='',ld='';
 for(const m of d.msgs){const k=dkey(m.at);if(k!==ld){h+=`<div class="ds"><span>${dlabel(m.at)}</span></div>`;ld=k}
-h+=`<div class="row"><div class="b ${m.dir}">${m.manual?'<div class="mn">✍️ נשלח ידנית</div>':''}${body(m)}<div class="meta">${m.dir==='out'?tick(m.status)+' ':''}${hm(m.at)}${m.pending?' · ממתין לתשובה':''}</div></div></div>`}
+h+=`<div class="row"><div class="b ${m.dir}">${m.manual==='viewer'?'<div class="mn">✍️ נשלח ידנית מהדף'+(m.override?' · למרות רשימת "לא ליצור קשר"':'')+'</div>':m.manual?'<div class="mn">✍️ נשלח ידנית</div>':''}${m.tpl?`<div class="tl">📋 תבנית: ${esc(m.tpl)}${m.recon==='partial'?' · נוסח משוחזר (חלק מהפרטים לא נשמרו)':m.recon==='full'?' · נוסח משוחזר':''}</div>`:''}${body(m)}<div class="meta">${m.dir==='out'?tick(m.status)+' ':''}${hm(m.at)}${m.pending?' · ממתין לתשובה':''}</div></div></div>`}
 ch.innerHTML=h||'<div class="ds"><span>אין הודעות</span></div>';if(!keep||atBottom)ch.scrollTop=ch.scrollHeight}
-function showErr(){}
-document.getElementById('search').oninput=renderList;document.getElementById('back').onclick=()=>{document.body.classList.remove('open');cur=null;renderList()};
-loadContacts().then(()=>{const o=new URLSearchParams(location.search).get('c');if(o)openT(o)});setInterval(()=>{loadContacts();if(cur)openT(cur,true)},15000);
+
+// 18.10 owner: write to the student from the viewer. Every guard is enforced again by the server (api=send).
+const MSGW='עברו יותר מ-24 שעות מההודעה האחרונה של התלמיד, ווטסאפ מאפשר רק תבנית מאושרת';let comp=null,sending=false,pendingCid=null;
+const cdt2=d=>new Date(d).toLocaleString('he-IL',{timeZone:TZ,day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+function showErr(m){const e=document.getElementById('cerr');e.textContent=m||'';e.style.display=m?'block':'none'}
+function hideOv(){const o=document.getElementById('cov');o.style.display='none';o.innerHTML=''}
+async function loadCompose(p){try{const s=await A('api=compose&phone='+p);if(cur!==p||s.error)return;comp=s;renderCompose()}catch(e){}}
+function renderCompose(){const n=document.getElementById('cnote'),c=document.getElementById('cmp'),t=document.getElementById('ctext'),b=document.getElementById('sendb'),k=document.getElementById('ccnt');
+if(!cur){c.style.display='none';n.style.display='none';return}c.style.display='flex';
+const len=[...t.value].length;k.textContent=len?len+'/4096':'';
+if(!comp){n.style.display='none';t.disabled=true;b.disabled=true;return}
+const parts=[];let warn=false;
+if(comp.no_contact&&comp.no_contact.length){parts.push('⚠️ <b>המספר הזה ברשימת "לא ליצור קשר":</b> '+comp.no_contact.map(esc).join(' · '));warn=true}
+if(!comp.window_open){parts.push('🔒 '+esc(MSGW)+(comp.last_in_at?' (ההודעה האחרונה ממנו: '+cdt2(comp.last_in_at)+')':' (התלמיד עוד לא כתב לנו)'));warn=true}
+else parts.push('✍️ אפשר לכתוב לו עד '+cdt2(comp.window_until)+' (24 שעות מההודעה האחרונה שלו). ההודעה נשלחת מהמספר של שירה ונשמרת בשיחה.');
+if(comp.weekend)parts.push('🕯️ היום שישי או שבת. שירה לא שולחת בימים האלה הודעות אוטומטיות, אבל שליחה ידנית היא החלטה שלך.');
+n.className=warn?'warn':'';n.innerHTML=parts.join('<br/>');n.style.display='block';
+t.disabled=!comp.window_open||sending;b.disabled=!comp.window_open||sending||!t.value.trim()||len>4096;b.textContent=sending?'שולח…':'שליחה'}
+function newCid(){return (crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,12))}
+function showOv(reasons,text){const o=document.getElementById('cov');
+o.innerHTML='<b>⚠️ ההודעה לא נשלחה: המספר הזה ברשימת "לא ליצור קשר"</b><ul>'+reasons.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ul>אם בכל זאת לשלוח, זו החלטה שלך, והשליחה תירשם ביומן כשליחה למרות האזהרה.<br/><button class="btn red" id="ovyes">שליחה בכל זאת</button><button class="btn gray" id="ovno">ביטול</button>';
+o.style.display='block';document.getElementById('ovno').onclick=hideOv;document.getElementById('ovyes').onclick=()=>{hideOv();doSend(true)}}
+async function doSend(override){const t=document.getElementById('ctext');const text=t.value,p=cur;if(!p||!text.trim()||sending)return;
+if([...text].length>4096){showErr('ההודעה ארוכה מדי (מקסימום 4096 תווים)');return}
+const c=contacts.find(x=>x.phone===p)||{};const who=(c.name?c.name+' ':'')+'('+fmtPhone(p)+')';
+if(!override&&!confirm('לשלוח את ההודעה הזו ל'+who+'?\n\n'+text))return;
+showErr('');sending=true;renderCompose();if(!pendingCid)pendingCid=newCid();
+try{const r=await fetch(API+'?k='+encodeURIComponent(K)+'&api=send',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({phone:p,text:text,confirmed:true,override:!!override,client_id:pendingCid})});
+const d=await r.json().catch(()=>({}));
+if(d.ok){if(cur===p)t.value='';pendingCid=null;hideOv();if(d.warning)showErr(d.warning);lastSig='';await openT(p,true);loadCompose(p);loadContacts()}
+else if(d.need_override){showOv(d.reasons||[],text)}
+else showErr(d.error||'השליחה נכשלה')}catch(e){showErr('אין חיבור לשרת. ההודעה לא נשלחה, אפשר לנסות שוב.')}
+finally{sending=false;renderCompose()}}
+document.getElementById('ctext').oninput=()=>{pendingCid=null;hideOv();renderCompose()};
+document.getElementById('ctext').onkeydown=e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();doSend(false)}};
+document.getElementById('sendb').onclick=()=>doSend(false);
+document.getElementById('search').oninput=renderList;document.getElementById('back').onclick=()=>{document.body.classList.remove('open');cur=null;comp=null;hideOv();renderCompose();renderList()};
+loadContacts().then(()=>{const o=new URLSearchParams(location.search).get('c');if(o)openT(o)});setInterval(()=>{loadContacts();if(cur){openT(cur,true);loadCompose(cur)}},15000);
 
 let cases=[];const cdt=d=>new Date(d).toLocaleString('he-IL',{timeZone:TZ,day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
 function cfilt(){const q=document.getElementById('csearch').value.trim().toLowerCase(),t=document.getElementById('ctype').value;return cases.filter(c=>(!t||c.case_type===t)&&(!q||[c.full_name,c.phone,c.phone&&fmtPhone(c.phone),c.reason,c.action_taken,c.notes].some(v=>(v||'').toLowerCase().includes(q.replace(/^0(?=5)/,'')))))}
