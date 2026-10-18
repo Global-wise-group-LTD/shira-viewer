@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="he" dir="rtl"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="robots" content="noindex"/><link rel="icon" href="data:,"/>
+<title>שירה · הצטרפות לטלגרם</title><style><![CDATA[
+*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Helvetica,Arial,sans-serif;background:#f0f2f5;color:#111b21}
+#tabs{display:flex;background:#00a884}#tabs a{flex:1;text-align:center;padding:10px 0;color:#e6fff8;text-decoration:none;font-weight:600;font-size:15px}#tabs a.on{background:#fff;color:#008069}
+main{max-width:1600px;margin:auto;padding:14px 16px}
+h1{font-size:20px;margin:4px 0 2px}.sub{color:#667781;font-size:13px;margin-bottom:12px}
+#cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.card{background:#fff;border-radius:12px;padding:12px 14px;box-shadow:0 1px 2px rgba(0,0,0,.08);border-top:5px solid #8696a0;cursor:pointer;user-select:none}
+.card.sel{outline:2px solid #00a884}.card .n{font-size:28px;font-weight:700}.card .l{font-size:13.5px;color:#3b4a54;margin-top:2px}
+.ctop{display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap;background:#fff;padding:10px 12px;border-radius:12px}
+.ctop input,.ctop select{padding:7px 10px;border:1px solid #d1d7db;border-radius:8px;font-size:14px;font-family:inherit}.ctop label{font-size:13.5px;color:#3b4a54;display:flex;align-items:center;gap:5px}
+.wrap{background:#fff;border-radius:12px;overflow:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}th{position:sticky;top:0;background:#f7f8fa;text-align:right;padding:8px;border-bottom:2px solid #d1d7db;white-space:nowrap;font-weight:600}
+td{padding:7px 8px;border-bottom:1px solid #eef0f1;vertical-align:top}tr:hover td{background:#fafbfb}
+.ltr{direction:ltr;unicode-bidi:embed;white-space:nowrap}.sm{color:#667781;font-size:11.5px}.na{color:#8696a0;font-style:italic}
+.st{display:inline-block;padding:3px 10px;border-radius:12px;font-weight:600;font-size:12.5px;white-space:nowrap;color:#fff}
+.yes{color:#1b7f3b;font-weight:700}.no{color:#b3261e}.bd{display:inline-block;font-size:11px;padding:1px 7px;border-radius:9px;background:#eceff1;color:#54656f;margin-inline-start:4px}
+#err{display:none;background:#fde8e8;color:#b3261e;padding:8px 12px;border-radius:8px;margin-bottom:10px}
+.legend{font-size:12px;color:#667781;margin-top:10px;line-height:1.6}
+]]></style></head><body>
+<div id="tabs"><a id="tabS" href="index.xhtml">שירה</a><a id="tabC" href="index.xhtml#cases">טיפולים</a><a id="tabT" href="index.xhtml#staff">לטיפול הצוות</a><a class="on" href="#">הצטרפות לטלגרם</a></div>
+<main>
+<h1>📲 הצטרפות לקבוצות הטלגרם</h1>
+<div class="sub">מי שקיבל משירה הודעת הצטרפות, ומה קרה אחר כך. מתעדכן אוטומטית כל 60 שניות · כל השעות לפי שעון ישראל · <span id="upd"></span></div>
+<div id="err"></div>
+<div id="cards"></div>
+<div class="ctop">
+<input id="q" placeholder="חיפוש לפי שם או טלפון"/>
+<label>מתאריך <input type="date" id="from"/></label><label>עד תאריך <input type="date" id="to"/></label>
+<select id="stf"><option value="">כל הסטטוסים</option></select>
+<label><input type="checkbox" id="unsent"/>להציג גם נרשמים שלא נשלחה להם הודעה</label>
+<label><input type="checkbox" id="mask"/>הסתרת מספרי טלפון</label>
+<span class="sm" id="cnt"></span>
+</div>
+<div class="wrap"><table><thead><tr><th>סטטוס</th><th>שם</th><th>טלפון</th><th>תאריך הרשמה</th><th>הודעת הכפתור נשלחה</th><th>לחיצה על הכפתור</th><th>הקישורים נשלחו</th><th>קבוצת הדיונים (הקהילה)</th><th>ערוץ העדכונים</th></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="legend">
+"נכנס" = נכנס בקישור האישי שלו. מי שנכנס בקישור אחר (למשל קישור כללי) לא מזוהה כאן ומופיע כ"לא נכנס".<br/>
+שעת הכניסה והיציאה מגיעות מטלגרם עצמו. אם מופיע "≈", זו שעת קבלת העדכון אצל שירה (בדרך כלל אותה דקה).<br/>
+✓✓ = נמסרה · <span style="color:#53bdeb">✓✓</span> = נקראה · ✓ = נשלחה · ⚠ = נכשלה (לפי דיווחי ווטסאפ). "לא זמין" = הנתון לא נשמר במערכת.
+</div>
+</main>
+<script>//<![CDATA[
+const P=new URLSearchParams(location.search);let K=P.get('k')||localStorage.getItem('shira_k');if(!K){K=prompt('מפתח עמוד השיחות של שירה:');}if(K)localStorage.setItem('shira_k',K);
+const API='https://gcmhtbbmjhkvqdvguhkh.supabase.co/functions/v1/shira-viewer';const TZ='Asia/Jerusalem';
+for(const id of ['tabS','tabC','tabT']){const a=document.getElementById(id);const h=a.getAttribute('href').split('#');a.href=h[0]+location.search+(h[1]?'#'+h[1]:'')}
+if(P.get('mask')==='1')document.getElementById('mask').checked=true;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmtPhone=p=>!p?'':p.startsWith('972')?'0'+p.slice(3).replace(/^(\d{2})(\d{3})(\d+)/,'$1-$2-$3'):p;
+const showPhone=p=>{const f=fmtPhone(p);return document.getElementById('mask').checked?f.replace(/^(\d{3})(.*)(\d{2})$/,(m,a,b,c)=>a+b.replace(/\d/g,'•')+c):f};
+const dt=d=>new Date(d).toLocaleString('he-IL',{timeZone:TZ,day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+const dkey=d=>new Date(d).toLocaleDateString('en-CA',{timeZone:TZ});
+const NA='<span class="na">לא זמין</span>';
+const ST={both:['נכנס לשתי הקבוצות','#1b7f3b'],one:['נכנס לקבוצה אחת','#5e9e2f'],links:['קיבל קישורים ולא נכנס','#e07b00'],nolinks:['לחץ, הקישורים לא נשלחו','#7b5ea7'],noclick:['לא לחץ על הכפתור','#c62828'],unsent:['לא נשלחה הודעה','#8696a0']};
+const ORDER=['both','one','links','nolinks','noclick','unsent'];
+const WHY={dry:'מצב בדיקה (לא נשלח)',capped:'הגיע למכסה היומית',skipped_registration_too_old:'ההרשמה ישנה מדי',skipped_template_not_ready:'התבנית לא הייתה מאושרת',skipped_not_registered_at_click:'לא נמצא רשום בזמן הלחיצה',error:'שגיאה בשליחה',sending:'בשליחה',request_sent:'',sent:'',test_archived:''};
+function status(r){const sent=r.request_sent_at||r.access_sent_at;if(!sent)return'unsent';const n=(r.community_at?1:0)+(r.channel_at?1:0);if(n===2)return'both';if(n===1)return'one';if(r.access_sent_at)return'links';if(r.clicked_at)return'nolinks';return'noclick'}
+function tick(s){return s==='read'?' <span style="color:#53bdeb">✓✓</span>':s==='delivered'?' ✓✓':s==='sent'?' ✓':s==='failed'?' <span class="no">⚠ נכשלה</span>':''}
+function joinCell(at,exact,left,r){if(!at)return r.access_sent_at?'<span class="no">לא נכנס</span>':'<span class="sm">—</span>';
+return `<span class="yes">נכנס</span> <span class="ltr">${exact?'':'≈'}${dt(at)}</span>${left?`<div class="sm">יצא מהקבוצה: <span class="ltr">${dt(left)}</span></div>`:''}`}
+let rows=[],selCard='';
+function filt(){const q=document.getElementById('q').value.trim().toLowerCase().replace(/[\s-]/g,''),f=document.getElementById('from').value,t=document.getElementById('to').value,s=document.getElementById('stf').value||selCard,u=document.getElementById('unsent').checked;
+const qp=q.replace(/^0(?=5)/,'972');
+return rows.filter(r=>{if(!u&&r._st==='unsent'&&s!=='unsent')return false;if(s&&r._st!==s)return false;const d=r._day;if(f&&(!d||d<f))return false;if(t&&(!d||d>t))return false;
+if(q&&!((r.name||'').toLowerCase().includes(q)||(r.phone||'').includes(qp)||(r.phone||'').includes(q)))return false;return true})}
+function render(){const sentRows=rows.filter(r=>r._st!=='unsent');const c={};for(const r of rows)c[r._st]=(c[r._st]||0)+1;
+const cards=[['','קיבלו הודעת הצטרפות',sentRows.length,'#00a884'],...ORDER.map(k=>[k,ST[k][0],c[k]||0,ST[k][1]])];
+document.getElementById('cards').innerHTML=cards.map(([k,l,n,col])=>`<div class="card${selCard===k?' sel':''}" data-k="${k}" style="border-top-color:${col}"><div class="n" style="color:${col}">${n}</div><div class="l">${esc(l)}</div></div>`).join('');
+document.querySelectorAll('.card').forEach(e=>e.onclick=()=>{selCard=e.dataset.k;document.getElementById('stf').value='';if(selCard==='unsent')document.getElementById('unsent').checked=true;render()});
+const f=filt();const all=document.getElementById('unsent').checked;document.getElementById('cnt').textContent='מוצגים '+f.length+' מתוך '+(all?rows.length+' רשומות':sentRows.length+' שקיבלו הודעה');
+document.getElementById('tb').innerHTML=f.map(r=>{const [l,col]=ST[r._st];const why=r._st==='unsent'&&WHY[r.send_status]?`<div class="sm">${esc(WHY[r.send_status])}</div>`:'';
+const tags=(r.send_status==='test_archived'?'<span class="bd">בדיקה</span>':'')+(r.removed_at?`<span class="bd">הוסר מהקבוצות <span class="ltr">${dt(r.removed_at)}</span></span>`:'')+(r.is_restore?'<span class="bd">החזרת גישה</span>':'');
+return `<tr><td><span class="st" style="background:${col}">${esc(l)}</span>${why}</td><td>${esc(r.name)||NA}${tags}${r.course?`<div class="sm">${esc(r.course)}</div>`:''}</td><td class="ltr">${showPhone(r.phone)||NA}</td><td class="ltr">${r.reg_date?esc(r.reg_date):NA}</td>
+<td>${r.request_sent_at?`<span class="ltr">${dt(r.request_sent_at)}</span>${tick(r.request_status)}`:r._st==='unsent'?'<span class="sm">—</span>':NA}</td>
+<td>${r.clicked_at?`<span class="ltr">${dt(r.clicked_at)}</span>${r.click_count>1?`<div class="sm">לחץ ${r.click_count} פעמים</div>`:''}`:r.request_sent_at?'<span class="no">עוד לא לחץ</span>':'<span class="sm">—</span>'}</td>
+<td>${r.access_sent_at?`<span class="ltr">${dt(r.access_sent_at)}</span>${tick(r.access_status)}`:'<span class="sm">—</span>'}</td>
+<td>${joinCell(r.community_at,r.community_exact,r.community_left_at,r)}</td><td>${joinCell(r.channel_at,r.channel_exact,r.channel_left_at,r)}</td></tr>`}).join('')||'<tr><td colspan="9" style="color:#667781;padding:16px">אין רשומות להצגה</td></tr>'}
+async function load(){try{const r=await fetch(API+'?k='+encodeURIComponent(K)+'&api=joins');if(r.status===401){localStorage.removeItem('shira_k');throw new Error('המפתח לא תקין. צריך לפתוח את הדף שוב מהקישור עם המפתח.')}
+const d=await r.json();if(d.error)throw new Error('שגיאה בשרת');rows=d.rows.map(x=>{const s=x.request_sent_at||x.access_sent_at;return{...x,_st:status(x),_day:s?dkey(s):null}});
+document.getElementById('err').style.display='none';document.getElementById('upd').textContent='עודכן לאחרונה: '+new Date(d.generated_at).toLocaleTimeString('he-IL',{timeZone:TZ,hour:'2-digit',minute:'2-digit',second:'2-digit'});render()}
+catch(e){const el=document.getElementById('err');el.textContent='לא הצלחתי לטעון את הנתונים: '+(e.message||'אין חיבור');el.style.display='block'}}
+document.getElementById('stf').innerHTML='<option value="">כל הסטטוסים</option>'+ORDER.map(k=>`<option value="${k}">${ST[k][0]}</option>`).join('');
+['q','from','to'].forEach(i=>document.getElementById(i).oninput=render);document.getElementById('stf').onchange=()=>{selCard='';render()};['unsent','mask'].forEach(i=>document.getElementById(i).onchange=render);
+load();setInterval(load,60000);
+//]]></script></body></html>
