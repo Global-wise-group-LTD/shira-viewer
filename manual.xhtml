@@ -32,7 +32,7 @@ const yes=b=>b?'כן':'לא';
 async function openP(ph){const d=await call('person',null,'&phone='+ph);if(!d.ok){alert(d.error);return}CUR=d;const p=d.person,f=p.flags||{},fb=d.fireberry;
 const inv=p.invites.map(i=>`<tr><td>${esc(i.created_at?.slice(0,10))}</td><td>${esc(i.send_status)}</td><td>${esc(i.expires_at?.slice(0,16))}</td><td>${i.joined_community_at?'הצטרף':''}</td></tr>`).join('');
 $('pc').style.display='';$('pc').innerHTML=`<h3>${esc(p.name||'ללא שם')} <span class="ltr">${esc(p.phone)}</span></h3>
-<p>מנוי לפי פיירברי (קריאה בלבד): ${fb?(fb.ok?fb.subs.map(s=>`${esc(s.status)}, אשראי שמור: ${yes(s.card_on_file)}`).join(' | ')||'אין מנוי':'לא הצלחתי לקרוא'):''}</p>
+<p>מנוי לפי פיירברי (קריאה בלבד): ${fb?(fb.ok?fb.subs.map(s=>esc(s.status)).join(' | ')||'אין מנוי':'לא הצלחתי לקרוא'):''}</p>
 <p>מנוי לפי המראה: ${p.mirror?`פעיל: ${yes(p.mirror.sub_active)}, בוטל: ${yes(p.mirror.sub_cancelled)}, אושר בלי מנוי: ${yes(p.mirror.approved_no_sub)}`:'אין'}</p>
 <p>גישה לקורס 70255: ${esc(p.course_70255||'לא ידוע')} · גישה לאנטולי: ${yes(p.anatoly_access)} · תוקף: <span class="ltr">${esc(p.expiry||'-')}</span></p>
 <p>${f.settled_outside_at?'<span class="badge">שולם מחוץ למערכת</span>':''}${f.frozen?'<span class="badge">מוקפא</span>':''}${f.exempt_collection?'<span class="badge">מוחרג</span>':''}${f.handled_by_staff?'<span class="badge">הצוות מטפל</span>':''}${f.phone_fixed_to?`<span class="badge">טלפון מתוקן ${esc(f.phone_fixed_to)}</span>`:''}</p>
