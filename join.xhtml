@@ -41,8 +41,8 @@ td{padding:7px 8px;border-bottom:1px solid #eef0f1;vertical-align:top}tr:hover t
 ✓✓ = נמסרה · <span style="color:#53bdeb">✓✓</span> = נקראה · ✓ = נשלחה · ⚠ = נכשלה (לפי דיווחי ווטסאפ). "לא זמין" = הנתון לא נשמר במערכת.
 </div>
 </main>
-<script>//<![CDATA[
-const P=new URLSearchParams(location.search);let K=P.get('k')||localStorage.getItem('shira_k');if(!K){K=prompt('מפתח עמוד השיחות של שירה:');}if(K)localStorage.setItem('shira_k',K);
+<script src="embed.js"></script><script>//<![CDATA[
+const P=new URLSearchParams(location.search);let K=P.get('k')||SH.store.get('shira_k');if(K)SH.store.set('shira_k',K);else{SH.prompt('מפתח עמוד השיחות של שירה:').then(v=>{if(v){SH.store.set('shira_k',v);location.reload()}});}
 const API='https://gcmhtbbmjhkvqdvguhkh.supabase.co/functions/v1/shira-viewer';const TZ='Asia/Jerusalem';
 for(const id of ['tabS','tabC','tabT']){const a=document.getElementById(id);const h=a.getAttribute('href').split('#');a.href=h[0]+location.search+(h[1]?'#'+h[1]:'')}
 if(P.get('mask')==='1')document.getElementById('mask').checked=true;
@@ -76,7 +76,7 @@ return `<tr><td><span class="st" style="background:${col}">${esc(l)}</span>${why
 <td>${r.clicked_at?`<span class="ltr">${dt(r.clicked_at)}</span>${r.click_count>1?`<div class="sm">לחץ ${r.click_count} פעמים</div>`:''}`:r.request_sent_at?'<span class="no">עוד לא לחץ</span>':'<span class="sm">—</span>'}</td>
 <td>${r.access_sent_at?`<span class="ltr">${dt(r.access_sent_at)}</span>${tick(r.access_status)}`:'<span class="sm">—</span>'}</td>
 <td>${joinCell(r.community_at,r.community_exact,r.community_left_at,r)}</td><td>${joinCell(r.channel_at,r.channel_exact,r.channel_left_at,r)}</td></tr>`}).join('')||'<tr><td colspan="9" style="color:#667781;padding:16px">אין רשומות להצגה</td></tr>'}
-async function load(){try{const r=await fetch(API+'?k='+encodeURIComponent(K)+'&api=joins');if(r.status===401){localStorage.removeItem('shira_k');throw new Error('המפתח לא תקין. צריך לפתוח את הדף שוב מהקישור עם המפתח.')}
+async function load(){try{const r=await fetch(API+'?k='+encodeURIComponent(K)+'&api=joins');if(r.status===401){SH.store.del('shira_k');throw new Error('המפתח לא תקין. צריך לפתוח את הדף שוב מהקישור עם המפתח.')}
 const d=await r.json();if(d.error)throw new Error('שגיאה בשרת');rows=d.rows.map(x=>{const s=x.request_sent_at||x.access_sent_at;return{...x,_st:status(x),_day:s?dkey(s):null}});
 document.getElementById('err').style.display='none';document.getElementById('upd').textContent='עודכן לאחרונה: '+new Date(d.generated_at).toLocaleTimeString('he-IL',{timeZone:TZ,hour:'2-digit',minute:'2-digit',second:'2-digit'});render()}
 catch(e){const el=document.getElementById('err');el.textContent='לא הצלחתי לטעון את הנתונים: '+(e.message||'אין חיבור');el.style.display='block'}}

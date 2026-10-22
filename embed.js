@@ -1,0 +1,19 @@
+/* Shared helpers for Shira pages: in-page modals (no prompt/confirm/alert, iframe-safe), embed=1 mode, safe storage. */
+(function(){
+var EMBED=new URLSearchParams(location.search).get('embed')==='1';
+var mem={};
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return mem[k]||null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){mem[k]=v}},del:function(k){try{localStorage.removeItem(k)}catch(e){delete mem[k]}}};
+var css='.uim-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:99999}.uim{background:#fff;border-radius:10px;padding:16px;width:min(480px,92vw);direction:rtl;font-family:Segoe UI,Arial,sans-serif;box-shadow:0 4px 20px rgba(0,0,0,.3)}.uim p{white-space:pre-wrap;margin:0 0 12px}.uim input{width:100%;padding:8px;border:1px solid #ccd;border-radius:8px;margin-bottom:12px;font:inherit}.uim button{padding:8px 16px;border:0;border-radius:8px;margin-inline-end:6px;cursor:pointer;font:inherit;background:#00a884;color:#fff}.uim button.c{background:#667781}';
+function ensureCss(){if(document.getElementById('uim-css'))return;var s=document.createElementNS('http://www.w3.org/1999/xhtml','style');s.id='uim-css';s.textContent=css;document.head.appendChild(s)}
+function el(t,c,x){var e=document.createElementNS('http://www.w3.org/1999/xhtml',t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function modal(msg,kind){ensureCss();return new Promise(function(res){var bg=el('div','uim-bg'),b=el('div','uim');b.appendChild(el('p','',msg));var inp=null;
+if(kind==='prompt'){inp=el('input');inp.setAttribute('type','password');b.appendChild(inp)}
+var ok=el('button','',kind==='alert'?'סגירה':'אישור');b.appendChild(ok);var ca=null;if(kind!=='alert'){ca=el('button','c','ביטול');b.appendChild(ca)}
+bg.appendChild(b);document.body.appendChild(bg);var done=function(v){bg.remove();res(v)};
+ok.onclick=function(){done(kind==='prompt'?inp.value:true)};if(ca)ca.onclick=function(){done(kind==='prompt'?null:false)};
+b.onkeydown=function(e){if(e.key==='Enter'&&kind!=='confirm'){e.preventDefault();ok.click()}if(e.key==='Escape'){(ca||ok).click()}};(inp||ok).focus()})}
+function linkEmbed(){if(!EMBED)return;document.documentElement.classList.add('embed');var a=document.querySelectorAll('a[href]');for(var i=0;i<a.length;i++){var h=a[i].getAttribute('href');if(/^(index|join|manual)\.xhtml/.test(h)){var u=new URL(h,location.href);u.searchParams.set('embed','1');a[i].setAttribute('href',u.pathname.split('/').pop()+u.search+u.hash)}}}
+function extLinks(root){var a=(root||document).querySelectorAll('a[href^="http"]');for(var i=0;i<a.length;i++){if(new URL(a[i].href).origin!==location.origin){a[i].setAttribute('target','_blank');a[i].setAttribute('rel','noopener noreferrer')}}}
+window.SH={EMBED:EMBED,store:store,alert:function(m){return modal(m,'alert')},confirm:function(m){return modal(m,'confirm')},prompt:function(m){return modal(m,'prompt')},linkEmbed:linkEmbed,extLinks:extLinks};
+document.addEventListener('DOMContentLoaded',function(){linkEmbed();extLinks();new MutationObserver(function(){extLinks()}).observe(document.body,{childList:true,subtree:true})});
+})();

@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="he" dir="rtl"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="robots" content="noindex"/>
 <title>שירה · שיחות</title><style><![CDATA[
+html.embed #tabA{display:none!important}
 *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Helvetica,Arial,sans-serif;background:#d1d7db;height:100vh;height:100dvh;overflow:hidden;display:flex;flex-direction:column}
 #app{display:flex;flex:1;min-height:0;width:100%;max-width:1600px;margin:auto;background:#fff}
 #side{width:30%;min-width:300px;border-left:1px solid #e9edef;display:flex;flex-direction:column}
@@ -51,9 +52,9 @@ body.st #app{display:none}body.st #staff{display:block}#staff table{border-colla
 <table><thead><tr><th>תאריך ושעה</th><th>שם מלא</th><th>טלפון</th><th>סוג מקרה</th><th>סיבה</th><th>מה בוצע</th><th>קורס הקלטות</th><th>טלגרם</th><th>נשלחה הודעה</th><th>הערות</th></tr></thead><tbody id="cbody"></tbody></table></div>
 <div id="staff"><div class="ctop"><b style="font-size:17px">🧑‍💼 מי שצריך טיפול של הצוות</b><span class="sm" id="tcount"></span><input id="tsearch" placeholder="חיפוש לפי שם, טלפון או משימה"/><select id="tstat"><option value="פתוח">פתוחים</option><option value="">הכול</option><option value="טופל">טופלו</option></select><button class="btn" id="tcsv">⬇ הורדה לאקסל (CSV)</button></div>
 <table><thead><tr><th>#</th><th>תאריך פתיחה</th><th>שם מלא</th><th>טלפון</th><th>אימייל</th><th>מה צריך לעשות</th><th>סיבה</th><th>מה שירה כבר עשתה</th><th>עד מתי</th><th>סטטוס</th><th>תאריך טיפול</th><th>הערות</th></tr></thead><tbody id="tbody"></tbody></table></div>
-<script>//<![CDATA[
+<script src="embed.js"></script><script>//<![CDATA[
 
-let K=new URLSearchParams(location.search).get('k')||localStorage.getItem('shira_k');if(!K){K=prompt('מפתח עמוד השיחות של שירה:');}if(K)localStorage.setItem('shira_k',K);const API='https://gcmhtbbmjhkvqdvguhkh.supabase.co/functions/v1/shira-viewer';const A=(q)=>fetch(API+'?k='+encodeURIComponent(K)+'&'+q).then(r=>r.json());
+let K=new URLSearchParams(location.search).get('k')||SH.store.get('shira_k');if(K)SH.store.set('shira_k',K);else{SH.prompt('מפתח עמוד השיחות של שירה:').then(v=>{if(v){SH.store.set('shira_k',v);location.reload()}});}const API='https://gcmhtbbmjhkvqdvguhkh.supabase.co/functions/v1/shira-viewer';const A=(q)=>fetch(API+'?k='+encodeURIComponent(K)+'&'+q).then(r=>r.json());
 {const ak=new URLSearchParams(location.search).get('ak');const t=document.getElementById('tabA');if(ak){t.href='https://gcmhtbbmjhkvqdvguhkh.supabase.co/functions/v1/chat-viewer?k='+encodeURIComponent(ak)}else{t.title='חסר פרמטר ak בקישור';t.style.opacity='.5'}}
 document.getElementById('tabJ').href='join.xhtml'+location.search;
 const TZ='Asia/Jerusalem';let contacts=[],cur=null,lastSig='';
@@ -76,7 +77,7 @@ function imgErr(e){const d=document.createElement('div');d.className='it';d.text
 function body(m){let h='';const media=m.media_id?API+`?k=${encodeURIComponent(K)}&api=media&id=${m.media_id}`:m.out_ref?API+`?k=${encodeURIComponent(K)}&api=out-media&ref=${encodeURIComponent(m.out_ref)}`:m.media;
 if(m.type==='image'||m.type==='sticker'){h+=media?`<img loading="lazy" src="${esc(media)}" onclick="window.open(this.src)" onerror="imgErr(this)"/>`:'<div class="it">[תמונה]</div>'}
 else if(m.type==='audio'||m.type==='voice'){const au=m.media_id?API+`?k=${encodeURIComponent(K)}&api=audio&id=${m.media_id}`:null;const tr=m.transcript||m.text;
-if(au)h+=`<audio class="au" controls="controls" preload="none" src="${esc(au)}"></audio><div class="it">🎤 הודעה קולית${m.voice==='stored'?'':' (מושמעת ישירות מוואטסאפ)'} · <a href="${esc(au)}" target="_blank" rel="noreferrer">הורדה</a></div>`;else h+='<div class="it">[הודעה קולית]</div>';
+if(au)h+=`<audio class="au" controls="controls" preload="none" src="${esc(au)}"></audio><div class="it">🎤 הודעה קולית${m.voice==='stored'?'':' (מושמעת ישירות מוואטסאפ)'} · <a href="${esc(au)}" target="_blank" rel="noopener noreferrer">הורדה</a></div>`;else h+='<div class="it">[הודעה קולית]</div>';
 if(tr)h+='<div class="it">🎤 תמלול:</div>';if(!m.text&&m.transcript)h+=esc(m.transcript)}
 else if(m.type&&!['text','button','interactive','reaction'].includes(m.type)&&!m.text)h+=`<div class="it">[${TYPES[m.type]||m.type}]</div>`;
 if(m.type==='reaction')h+='תגובה: ';if(m.text)h+=esc(m.text);return h}
@@ -118,7 +119,7 @@ o.style.display='block';document.getElementById('ovno').onclick=hideOv;document.
 async function doSend(override){const t=document.getElementById('ctext');const text=t.value,p=cur;if(!p||!text.trim()||sending)return;
 if([...text].length>4096){showErr('ההודעה ארוכה מדי (מקסימום 4096 תווים)');return}
 const c=contacts.find(x=>x.phone===p)||{};const who=(c.name?c.name+' ':'')+'('+fmtPhone(p)+')';
-if(!override&&!confirm('לשלוח את ההודעה הזו ל'+who+'?\n\n'+text))return;
+if(!override&&!(await SH.confirm('לשלוח את ההודעה הזו ל'+who+'?\n\n'+text)))return;
 showErr('');sending=true;renderCompose();if(!pendingCid)pendingCid=newCid();
 try{const r=await fetch(API+'?k='+encodeURIComponent(K)+'&api=send',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({phone:p,text:text,confirmed:true,override:!!override,client_id:pendingCid})});
 const d=await r.json().catch(()=>({}));
