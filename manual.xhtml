@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="he" dir="rtl"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="robots" content="noindex"/>
+<title>שירה · פעולות ידניות</title><style><![CDATA[
+body{font-family:Segoe UI,Arial,sans-serif;background:#f0f2f5;margin:0;color:#111b21}main{max-width:1000px;margin:auto;padding:16px}
+.card{background:#fff;border-radius:10px;padding:14px;margin:10px 0;box-shadow:0 1px 2px #0002}input,select,textarea,button{font:inherit;padding:8px;border-radius:8px;border:1px solid #ccd}
+button{background:#00a884;color:#fff;border:0;cursor:pointer}button.sec{background:#667781}button.danger{background:#e53935}
+.ltr{direction:ltr;unicode-bidi:embed}.badge{display:inline-block;padding:2px 8px;border-radius:9px;background:#e7f3ff;margin:2px}
+.mode{padding:6px 10px;border-radius:8px;background:#fff3cd}#dlg{position:fixed;inset:0;background:#0006;display:none;align-items:center;justify-content:center}
+#dlg .card{width:min(560px,94vw)}table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px solid #eee;padding:4px;text-align:right}
+.acts button{margin:3px}.err{color:#e53935}
+]]></style></head><body><main>
+<div id="login" class="card"><h2>פעולות ידניות, כניסה</h2><p>הכנס סיסמה:</p><input id="pw" type="password" class="ltr"/> <button id="lb">כניסה</button><p id="le" class="err"></p></div>
+<div id="app" style="display:none">
+<div class="card"><b>פעולות ידניות</b> <span id="mode" class="mode"></span> <button class="sec" id="lo">יציאה</button></div>
+<div class="card"><input id="q" placeholder="חיפוש לפי טלפון או שם" style="width:60%"/> <button id="sb">חיפוש</button><div id="res"></div></div>
+<div id="pc" class="card" style="display:none"></div>
+<div class="card"><b>יומן הפעולות</b> <button class="sec" id="ab">רענון</button><div id="au"></div></div>
+</div>
+<div id="dlg"><div class="card"><h3 id="dt"></h3><div id="df"></div><div id="dp"></div>
+<p>סיבה (חובה):</p><textarea id="dr" rows="2" style="width:100%"></textarea><div id="dx"></div><p id="de" class="err"></p>
+<button id="dok">אישור וביצוע</button> <button class="sec" id="dc">ביטול</button></div></div>
+<script><![CDATA[
+const API='https://gcmhtbbmjhkvqdvguhkh.supabase.co/functions/v1/shira-manual';let T=sessionStorage.getItem('sm_t');let CUR=null,ACT=null;
+const $=i=>document.getElementById(i);const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function call(api,body,qs=''){const r=await fetch(API+'?api='+api+qs,{method:body?'POST':'GET',headers:{'content-type':'application/json',authorization:'Bearer '+(T||'')},body:body?JSON.stringify(body):undefined});const d=await r.json();if(r.status===401&&api!=='login'){sessionStorage.removeItem('sm_t');location.reload()}return d}
+$('lb').onclick=async()=>{const d=await call('login',{password:$('pw').value});if(!d.ok){$('le').textContent=d.error;return}T=d.token;sessionStorage.setItem('sm_t',T);start()};
+$('lo').onclick=()=>{sessionStorage.removeItem('sm_t');location.reload()};
+async function start(){const m=await call('meta');if(!m.ok)return;$('login').style.display='none';$('app').style.display='';$('mode').textContent=m.live?'מצב אמיתי: הפעולות מתבצעות':'מצב בדיקה: שום פעולה לא מתבצעת באמת, רק נרשמת ביומן';loadAudit()}
+$('sb').onclick=async()=>{const d=await call('search',null,'&q='+encodeURIComponent($('q').value));$('res').innerHTML=(d.results||[]).map(r=>`<div><a href="#" data-p="${esc(r.phone)}">${esc(r.name||'ללא שם')} <span class="ltr">${esc(r.phone)}</span></a></div>`).join('')||'לא נמצא';$('res').querySelectorAll('a').forEach(a=>a.onclick=e=>{e.preventDefault();openP(a.dataset.p)})};
+const yes=b=>b?'כן':'לא';
+async function openP(ph){const d=await call('person',null,'&phone='+ph);if(!d.ok){alert(d.error);return}CUR=d;const p=d.person,f=p.flags||{},fb=d.fireberry;
+const inv=p.invites.map(i=>`<tr><td>${esc(i.created_at?.slice(0,10))}</td><td>${esc(i.send_status)}</td><td>${esc(i.expires_at?.slice(0,16))}</td><td>${i.joined_community_at?'הצטרף':''}</td></tr>`).join('');
+$('pc').style.display='';$('pc').innerHTML=`<h3>${esc(p.name||'ללא שם')} <span class="ltr">${esc(p.phone)}</span></h3>
+<p>מנוי לפי פיירברי (קריאה בלבד): ${fb?(fb.ok?fb.subs.map(s=>`${esc(s.status)}, אשראי שמור: ${yes(s.card_on_file)}`).join(' | ')||'אין מנוי':'לא הצלחתי לקרוא'):''}</p>
+<p>מנוי לפי המראה: ${p.mirror?`פעיל: ${yes(p.mirror.sub_active)}, בוטל: ${yes(p.mirror.sub_cancelled)}, אושר בלי מנוי: ${yes(p.mirror.approved_no_sub)}`:'אין'}</p>
+<p>גישה לקורס 70255: ${esc(p.course_70255||'לא ידוע')} · גישה לאנטולי: ${yes(p.anatoly_access)} · תוקף: <span class="ltr">${esc(p.expiry||'-')}</span></p>
+<p>${f.settled_outside_at?'<span class="badge">שולם מחוץ למערכת</span>':''}${f.frozen?'<span class="badge">מוקפא</span>':''}${f.exempt_collection?'<span class="badge">מוחרג</span>':''}${f.handled_by_staff?'<span class="badge">הצוות מטפל</span>':''}${f.phone_fixed_to?`<span class="badge">טלפון מתוקן ${esc(f.phone_fixed_to)}</span>`:''}</p>
+<b>קישורי טלגרם שנשלחו</b><table><tr><th>נוצר</th><th>סטטוס</th><th>תוקף</th><th>הצטרפות</th></tr>${inv}</table>
+<div class="acts">${(window.ACTS||[]).map(a=>`<button class="${a[0]==='remove'?'danger':''}" data-a="${a[0]}">${a[1]}</button>`).join('')}</div>
+<b>היסטוריה</b><table>${d.audit.map(a=>`<tr><td class="ltr">${esc(a.at.slice(0,16))}</td><td>${esc(a.action)}</td><td>${esc(a.mode)}</td><td>${esc(a.result)}</td><td>${esc(a.reason)}</td></tr>`).join('')}${p.handled.map(h=>`<tr><td class="ltr">${esc(h.handled_at?.slice(0,16))}</td><td colspan="4">${esc(h.case_type)}: ${esc(h.action_taken)}</td></tr>`).join('')}</table>`;
+$('pc').querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>dlg(b.dataset.a,b.textContent))}
+window.ACTS=[['register','רישום ידני של משלם'],['resend','שליחה חוזרת של קישורים'],['settle','סימון תשלום שהוסדר'],['period','הארכה או הקפאה'],['exempt','החרגה מגבייה'],['restore','החזרת גישה'],['remove','הסרה ידנית'],['fix_phone','תיקון טלפון'],['staff','הצוות מטפל']];
+const TG=`<label><input type="checkbox" value="course" class="tg"/> קורס 70255</label> <label><input type="checkbox" value="telegram" class="tg"/> קבוצות טלגרם</label> <label><input type="checkbox" value="anatoly" class="tg"/> אנטולי</label>`;
+const FORM={register:`<p>שם: <input id="f_name"/></p>`,settle:`<p>הערה: <input id="f_note"/></p>`,period:`<p>להאריך עד: <input id="f_until" type="date"/></p><p><select id="f_frozen"><option value="">בלי שינוי בהקפאה</option><option value="1">להקפיא</option><option value="0">לבטל הקפאה</option></select></p>`,
+exempt:`<p><select id="f_ex"><option value="1">להחריג</option><option value="0">לבטל החרגה</option></select></p>`,restore:TG,remove:TG,fix_phone:`<p>הטלפון הנכון: <input id="f_np" class="ltr"/></p>`,staff:`<p><select id="f_on"><option value="1">לסמן</option><option value="0">לבטל סימון</option></select></p>`};
+function body(){const b={action:ACT,phone:CUR.person.phone,name:$('f_name')?.value||CUR.person.name,note:$('f_note')?.value,period_until:$('f_until')?.value||undefined,new_phone:$('f_np')?.value,
+targets:[...document.querySelectorAll('.tg:checked')].map(x=>x.value),confirm_duplicate:!!$('f_dup')?.checked,confirm_text:$('f_ct')?.value};
+const fr=$('f_frozen')?.value;if(fr)b.frozen=fr==='1';if($('f_ex'))b.exempt=$('f_ex').value==='1';if($('f_on'))b.on=$('f_on').value==='1';return b}
+async function preview(){const d=await call('plan',body());$('de').textContent='';if(!d.ok){$('dp').innerHTML='';$('de').textContent=d.error;if(d.code==='duplicate'&&!$('f_dup'))$('dx').innerHTML+=`<p><label><input type="checkbox" id="f_dup"/> אני מאשר שליחה כפולה</label></p>`;return false}
+$('dp').innerHTML='<p><b>מה יקרה בדיוק:</b></p><ul>'+d.steps.map(s=>`<li>${esc(s)}</li>`).join('')+'</ul>'+d.warn.map(w=>`<p class="err">${esc(w)}</p>`).join('')+(d.live?'':'<p class="mode">מצב בדיקה: לא יתבצע באמת</p>');return true}
+function dlg(a,l){ACT=a;$('dt').textContent=l;$('df').innerHTML=FORM[a]||'';$('dp').innerHTML='';$('dr').value='';$('de').textContent='';
+$('dx').innerHTML=a==='remove'?`<p>אישור שני: הקלד את המילה הסרה <input id="f_ct"/></p>`:'';$('dlg').style.display='flex';$('df').oninput=$('df').onchange=preview;$('dx').onchange=preview;preview()}
+$('dc').onclick=()=>$('dlg').style.display='none';
+$('dok').onclick=async()=>{if(!await preview())return;const b=body();b.reason=$('dr').value;b.confirmed=true;const d=await call('run',b);if(!d.ok){$('de').textContent=d.error;return}
+$('dlg').style.display='none';alert(d.mode==='live'?'בוצע. מספר ביומן: '+d.audit_id:'נרשם כבדיקה בלבד. מספר ביומן: '+d.audit_id);openP(CUR.person.phone);loadAudit()};
+async function loadAudit(){const d=await call('audit');$('au').innerHTML='<table><tr><th>מתי</th><th>פעולה</th><th>טלפון</th><th>מצב</th><th>תוצאה</th><th>סיבה</th></tr>'+(d.audit||[]).map(a=>`<tr><td class="ltr">${esc(new Date(a.at).toLocaleString('he-IL',{timeZone:'Asia/Jerusalem'}))}</td><td>${esc(a.action)}</td><td class="ltr">${esc(a.target_phone)}</td><td>${esc(a.mode)}</td><td>${esc(a.result)}</td><td>${esc(a.reason)}</td></tr>`).join('')+'</table>'}
+$('ab').onclick=loadAudit;if(T)start();
+]]></script></main></body></html>
