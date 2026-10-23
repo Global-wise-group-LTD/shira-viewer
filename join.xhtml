@@ -41,7 +41,7 @@ td{padding:7px 8px;border-bottom:1px solid #eef0f1;vertical-align:top}tr:hover t
 ✓✓ = נמסרה · <span style="color:#53bdeb">✓✓</span> = נקראה · ✓ = נשלחה · ⚠ = נכשלה (לפי דיווחי ווטסאפ). "לא זמין" = הנתון לא נשמר במערכת.
 </div>
 </main>
-<script src="embed.js"></script><script>//<![CDATA[
+<script src="embed.js"></script><script>SH.handoff(function(){try{return K}catch(e){return null}});</script><script>//<![CDATA[
 const P=new URLSearchParams(location.search);let K=SH.EMBED?null:(P.get('k')||SH.store.get('shira_k'));if(K)SH.store.set('shira_k',K);else if(SH.EMBED){try{window.parent.postMessage({type:'wise-key-request',page:'shira'},'https://fb-dashboard-one.vercel.app')}catch(e){}}else{SH.prompt('מפתח עמוד השיחות של שירה:').then(v=>{if(v){SH.store.set('shira_k',v);location.reload()}});}
 if(SH.EMBED)window.addEventListener('message',ev=>{if(ev.origin!=='https://fb-dashboard-one.vercel.app')return;const d=ev.data;if(!d||d.type!=='wise-key'||typeof d.k!=='string'||!d.k)return;const had=K;K=d.k;if(had!==K)load()});
 const API='https://gcmhtbbmjhkvqdvguhkh.supabase.co/functions/v1/shira-viewer';const TZ='Asia/Jerusalem';
